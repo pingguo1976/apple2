@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>水果认知闯关游戏</title>
+    <style>
+        body {
+            font-family: 'Arial Rounded MT Bold', 'Arial', sans-serif;
+            background-color: #f0f9ff;
+            text-align: center;
+            padding: 20px;
+        }
+        h1 {
+            color: #ff6b6b;
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+        .levels {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+        .level {
+            background-color: #ffd166;
+            color: white;
+            padding: 10px 15px;
+            margin: 5px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: bold;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            transition: all 0.3s;
+        }
+        .level:hover {
+            transform: scale(1.05);
+        }
+        .level.active {
+            background-color: #06d6a0;
+            transform: scale(1.1);
+        }
+        .level.completed {
+            background-color: #118ab2;
+        }
+        .game-area {
+            background-color: white;
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+            margin: 0 auto;
+            max-width: 800px;
+        }
+        .target {
+            display: inline-block;
+            width: 120px;
+            height: 120px;
+            background-color: #ffddd2;
+            border-radius: 15px;
+            margin: 10px;
+            line-height: 120px;
+            font-size: 28px;
+            color: #333;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 3px dashed transparent;
+        }
+        .target.highlight {
+            border-color: #06d6a0;
+            background-color: #e8f7f3;
+        }
+        .images {
+            margin-top: 30px;
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .fruit-img {
+            width: 100px;
+            height: 100px;
+            object-fit: contain;
+            margin: 10px;
+            cursor: move;
+            transition: all 0.3s;
+            border-radius: 15px;
+            border: 3px solid transparent;
+        }
+        .fruit-img:hover {
+            transform: scale(1.1);
+        }
+        .fruit-img.dragging {
+            opacity: 0.7;
+            transform: scale(1.05);
+        }
+        .feedback {
+            margin-top: 20px;
+            font-size: 24px;
+            font-weight: bold;
+            min-height: 40px;
+            color: #06d6a0;
+        }
+        .celebration {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255,215,0,0.9);
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            animation: celebrate 2s;
+        }
+        .celebration h2 {
+            font-size: 3em;
+            color: #ff6b6b;
+            margin-bottom: 20px;
+        }
+        .celebration img {
+            width: 200px;
+            height: 200px;
+        }
+        @keyframes celebrate {
+            0% { transform: scale(0); opacity: 0; }
+            50% { transform: scale(1.1); opacity: 1; }
+            100% { transform: scale(1); }
+        }
+        .next-btn {
+            background-color: #06d6a0;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 18px;
+            border-radius: 30px;
+            margin-top: 20px;
+            cursor: pointer;
+            display: none;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        .next-btn:hover {
+            background-color: #05b58b;
+        }
+    </style>
+</head>
+<body>
+    <h1>水果认知闯关游戏</h1>
+    
+    <div class="levels">
+        <div class="level active" data-level="1">第一关: 苹果</div>
+        <div class="level" data-level="2">第二关: 香蕉</div>
+        <div class="level" data-level="3">第三关: 梨</div>
+        <div class="level" data-level="4">第四关: 火龙果</div>
+        <div class="level" data-level="5">第五关: 西瓜</div>
+        <div class="level" data-level="6">第六关: 橘子</div>
+        <div class="level" data-level="7">第七关: 桃子</div>
+        <div class="level" data-level="8">第八关: 哈密瓜</div>
+    </div>
+    
+    <div class="game-area">
+        <div class="target" data-fruit="苹果">苹果</div>
+        
+        <div class="images">
+            <img src="file:///D:/images/哈密瓜.jpg" class="fruit-img" draggable="true" data-fruit="哈密瓜">
+            <img src="file:///D:/images/苹果.jpg" class="fruit-img" draggable="true" data-fruit="苹果">
+            <img src="file:///D:/images/香蕉.jpg" class="fruit-img" draggable="true" data-fruit="香蕉">
+            <img src="file:///D:/images/梨.jpg" class="fruit-img" draggable="true" data-fruit="梨">
+            <img src="file:///D:/images/桃子.jpg" class="fruit-img" draggable="true" data-fruit="桃子">
+            <img src="file:///D:/images/西瓜.jpg" class="fruit-img" draggable="true" data-fruit="西瓜">
+            <img src="file:///D:/images/橘子.jpg" class="fruit-img" draggable="true" data-fruit="橘子">
+            <img src="file:///D:/images/火龙果.jpg" class="fruit-img" draggable="true" data-fruit="火龙果">
+        </div>
+        
+        <div class="feedback"></div>
+        <button class="next-btn">下一关</button>
+    </div>
+    
+    <div class="celebration">
+        <h2>太棒了！你完成了所有关卡！</h2>
+        <img src="https://cdn.pixabay.com/photo/2016/08/11/08/43/celebrate-1585824_960_720.png" alt="庆祝">
+    </div>
+    
+    <audio id="correct-sound" src="https://www.soundjay.com/buttons/sounds/button-09.mp3"></audio>
+    <audio id="wrong-sound" src="https://www.soundjay.com/buttons/sounds/button-10.mp3"></audio>
+    <audio id="celebration-sound" src="https://www.soundjay.com/human/sounds/applause-8.mp3"></audio>
+    
+    <script>
+        // 语音合成
+        const synth = window.speechSynthesis;
+        
+        // 关卡数据
+        const levels = [
+            { name: "苹果", image: "苹果.jpg" },
+            { name: "香蕉", image: "香蕉.jpg" },
+            { name: "梨", image: "梨.jpg" },
+            { name: "火龙果", image: "火龙果.jpg" },
+            { name: "西瓜", image: "西瓜.jpg" },
+            { name: "橘子", image: "橘子.jpg" },
+            { name: "桃子", image: "桃子.jpg" },
+            { name: "哈密瓜", image: "哈密瓜.jpg" }
+        ];
+        
+        let currentLevel = 0;
+        let completedLevels = 0;
+        
+        // DOM元素
+        const levelElements = document.querySelectorAll('.level');
+        const targetElement = document.querySelector('.target');
+        const feedbackElement = document.querySelector('.feedback');
+        const nextButton = document.querySelector('.next-btn');
+        const celebrationElement = document.querySelector('.celebration');
+        const correctSound = document.getElementById('correct-sound');
+        const wrongSound = document.getElementById('wrong-sound');
+        const celebrationSound = document.getElementById('celebration-sound');
+        
+        // 初始化游戏
+        function initGame() {
+            updateLevelDisplay();
+            
+            // 点击关卡标签
+            levelElements.forEach(level => {
+                level.addEventListener('click', function() {
+                    const levelIndex = parseInt(this.getAttribute('data-level')) - 1;
+                    if (levelIndex <= completedLevels) {
+                        currentLevel = levelIndex;
+                        updateLevelDisplay();
+                    }
+                });
+            });
+            
+            // 点击目标文字发音
+            targetElement.addEventListener('click', function() {
+                speak(levels[currentLevel].name);
+            });
+            
+            // 下一关按钮
+            nextButton.addEventListener('click', goToNextLevel);
+            
+            // 拖拽事件
+            const fruitImages = document.querySelectorAll('.fruit-img');
+            fruitImages.forEach(img => {
+                img.addEventListener('dragstart', dragStart);
+            });
+            
+            targetElement.addEventListener('dragover', dragOver);
+            targetElement.addEventListener('dragenter', dragEnter);
+            targetElement.addEventListener('dragleave', dragLeave);
+            targetElement.addEventListener('drop', drop);
+            targetElement.addEventListener('dragend', dragEnd);
+        }
+        
+        // 更新关卡显示
+        function updateLevelDisplay() {
+            // 更新关卡标签
+            levelElements.forEach((level, index) => {
+                level.classList.remove('active');
+                if (index === currentLevel) {
+                    level.classList.add('active');
+                }
+                if (index < completedLevels) {
+                    level.classList.add('completed');
+                }
+            });
+            
+            // 更新目标文字
+            targetElement.textContent = levels[currentLevel].name;
+            targetElement.setAttribute('data-fruit', levels[currentLevel].name);
+            feedbackElement.textContent = '';
+            nextButton.style.display = 'none';
+            
+            // 发音当前水果名称
+            speak(levels[currentLevel].name);
+        }
+        
+        // 发音函数
+        function speak(text) {
+            if (synth.speaking) {
+                synth.cancel();
+            }
+            
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'zh-CN';
+            synth.speak(utterance);
+        }
+        
+        // 拖拽函数
+        function dragStart(e) {
+            e.dataTransfer.setData('text/plain', e.target.getAttribute('data-fruit'));
+            e.target.classList.add('dragging');
+        }
+        
+        function dragOver(e) {
+            e.preventDefault();
+        }
+        
+        function dragEnter(e) {
+            e.preventDefault();
+            targetElement.classList.add('highlight');
+        }
+        
+        function dragLeave() {
+            targetElement.classList.remove('highlight');
+        }
+        
+        function drop(e) {
+            e.preventDefault();
+            targetElement.classList.remove('highlight');
+            
+            const draggedFruit = e.dataTransfer.getData('text/plain');
+            const targetFruit = targetElement.getAttribute('data-fruit');
+            
+            // 检查是否匹配
+            if (draggedFruit === targetFruit) {
+                feedbackElement.textContent = '太棒了！正确！';
+                feedbackElement.style.color = '#06d6a0';
+                correctSound.play();
+                speak('正确！太棒了！');
+                
+                // 如果是第一次完成这个关卡
+                if (currentLevel === completedLevels) {
+                    completedLevels++;
+                    if (completedLevels < levels.length) {
+                        nextButton.style.display = 'inline-block';
+                    } else {
+                        // 所有关卡完成
+                        celebrationElement.style.display = 'flex';
+                        celebrationSound.play();
+                        speak('恭喜你完成了所有关卡！太厉害了！');
+                    }
+                }
+            } else {
+                feedbackElement.textContent = '再试一次吧！';
+                feedbackElement.style.color = '#ff6b6b';
+                wrongSound.play();
+                speak('不对哦，再试试看！');
+            }
+        }
+        
+        function dragEnd(e) {
+            e.target.classList.remove('dragging');
+        }
+        
+        // 下一关
+        function goToNextLevel() {
+            if (currentLevel < levels.length - 1) {
+                currentLevel++;
+                updateLevelDisplay();
+            }
+        }
+        
+        // 初始化游戏
+        window.onload = initGame;
+    </script>
+</body>
+</html>
